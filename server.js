@@ -11,8 +11,7 @@ const io = socketIo(server);
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URL, {
-    });
+    await mongoose.connect(process.env.MONGODB_URL);
     console.log("MongoDB connected successfully");
   } catch (err) {
     console.error("Database connection failed", err);
@@ -40,9 +39,12 @@ io.on('connection', (socket) => {
         socket.email = email;
         socket.join('mainRoom');
         io.to('mainRoom').emit('updateUsers', await getOnlineUsers());
+      } else {
+        socket.emit('error', 'Email not registered. Please check and try again.');
       }
     } catch (err) {
       console.error('Error handling join event:', err);
+      socket.emit('error', 'An error occurred while joining the room.');
     }
   });
 

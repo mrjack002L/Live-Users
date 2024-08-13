@@ -1,0 +1,232 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Users in Room</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Live Users in Room</h2>
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Socket ID</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>User Details</h3>
+            <div id="userDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        
+        socket.on('connect', () => {
+            const email = prompt('Enter your email to join the room:');
+            socket.emit('join', email);
+        });
+
+        socket.on('updateUsers', (users) => {
+            const tbody = $('#usersTable tbody');
+            tbody.empty();
+            users.forEach(user => {
+                tbody.append(`
+                    <tr>
+                        <td><a href="#" class="user-link" data-email="${user.email}">${user.email}</a></td>
+                        <td>Online</td>
+                        <td>${user.socketId}</td>
+                    </tr>
+                `);
+            });
+        });
+
+        $(document).on('click', '.user-link', function(e) {
+            e.preventDefault();
+            const email = $(this).data('email');
+            $.get(`/api/users/${email}`, function(user) {
+                $('#userDetails').html(`
+                    <p>Email: ${user.email}</p>
+                    <p>Name: ${user.firstName} ${user.lastName}</p>
+                    <p>Mobile: ${user.mobileNo}</p>
+                    <p>Address: ${user.street}, ${user.city}, ${user.state}, ${user.country}</p>
+                    <p>Login ID: ${user.loginId}</p>
+                `);
+                $('#userModal').show();
+            });
+        });
+
+        $('.close').click(function() {
+            $('#userModal').hide();
+        });
+
+        $(window).click(function(e) {
+            if ($(e.target).is('#userModal')) {
+                $('#userModal').hide();
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Users in Room</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        /* Add some basic styling for the modal and table */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            background-color: #ffeeba;
+            border: 2px solid #030c15;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Live Users in Room</h2>
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Socket ID</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <!-- User Details Container -->
+        <div id="userDetailsContainer" style="display: none;">
+            <h3>User Details</h3>
+            <div id="userDetails"></div>
+        </div>
+    </div>
+
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>User Details</h3>
+            <div id="userDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+
+        socket.on('connect', () => {
+            const email = prompt('Enter your email to join the room:');
+            socket.emit('join', email);
+        });
+
+        socket.on('updateUsers', (users) => {
+            const tbody = $('#usersTable tbody');
+            tbody.empty();
+            users.forEach(user => {
+                tbody.append(`
+                    <tr>
+                        <td><a href="#" class="user-link" data-email="${user.email}">${user.email}</a></td>
+                        <td>Online</td>
+                        <td>${user.socketId}</td>
+                    </tr>
+                `);
+            });
+        });
+
+        $(document).on('click', '.user-link', function(e) {
+            e.preventDefault();
+            const email = $(this).data('email');
+            $.get(`/api/users/${email}`, function(user) {
+                $('#userDetails').html(`
+                    <p>Email: ${user.email}</p>
+                    <p>Name: ${user.firstName} ${user.lastName}</p>
+                    <p>Mobile: ${user.mobileNo}</p>
+                    <p>Address: ${user.street}, ${user.city}, ${user.state}, ${user.country}</p>
+                    <p>Login ID: ${user.loginId}</p>
+                `);
+                $('#userDetailsContainer').show(); // Show the user details container
+            });
+        });
+
+        $('.close').click(function() {
+            $('#userDetailsContainer').hide(); // Hide the user details container
+        });
+
+        $(window).click(function(e) {
+            if ($(e.target).is('#userModal')) {
+                $('#userDetailsContainer').hide(); // Hide the user details container
+            }
+        });
+    </script>
+</body>
+</html>

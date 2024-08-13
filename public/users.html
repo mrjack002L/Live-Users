@@ -1,86 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Users in Room</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-</head>
-<body>
-    <div class="container">
-        <h2>Live Users in Room</h2>
-        <table id="usersTable">
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Socket ID</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div id="userModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3>User Details</h3>
-            <div id="userDetails"></div>
-        </div>
-    </div>
-
-    <script>
-        const socket = io();
-        
-        socket.on('connect', () => {
-            const email = prompt('Enter your email to join the room:');
-            socket.emit('join', email);
-        });
-
-        socket.on('updateUsers', (users) => {
-            const tbody = $('#usersTable tbody');
-            tbody.empty();
-            users.forEach(user => {
-                tbody.append(`
-                    <tr>
-                        <td><a href="#" class="user-link" data-email="${user.email}">${user.email}</a></td>
-                        <td>Online</td>
-                        <td>${user.socketId}</td>
-                    </tr>
-                `);
-            });
-        });
-
-        $(document).on('click', '.user-link', function(e) {
-            e.preventDefault();
-            const email = $(this).data('email');
-            $.get(`/api/users/${email}`, function(user) {
-                $('#userDetails').html(`
-                    <p>Email: ${user.email}</p>
-                    <p>Name: ${user.firstName} ${user.lastName}</p>
-                    <p>Mobile: ${user.mobileNo}</p>
-                    <p>Address: ${user.street}, ${user.city}, ${user.state}, ${user.country}</p>
-                    <p>Login ID: ${user.loginId}</p>
-                `);
-                $('#userModal').show();
-            });
-        });
-
-        $('.close').click(function() {
-            $('#userModal').hide();
-        });
-
-        $(window).click(function(e) {
-            if ($(e.target).is('#userModal')) {
-                $('#userModal').hide();
-            }
-        });
-    </script>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -186,7 +103,11 @@
 
         socket.on('connect', () => {
             const email = prompt('Enter your email to join the room:');
-            socket.emit('join', email);
+            if (email) {
+                socket.emit('join', email);
+            } else {
+                alert('Email is required to join the room.');
+            }
         });
 
         socket.on('updateUsers', (users) => {
@@ -203,6 +124,10 @@
             });
         });
 
+        socket.on('error', (message) => {
+            alert(message);
+        });
+
         $(document).on('click', '.user-link', function(e) {
             e.preventDefault();
             const email = $(this).data('email');
@@ -214,17 +139,19 @@
                     <p>Address: ${user.street}, ${user.city}, ${user.state}, ${user.country}</p>
                     <p>Login ID: ${user.loginId}</p>
                 `);
-                $('#userDetailsContainer').show(); // Show the user details container
+                $('#userDetailsContainer').show(); 
+            }).fail(function() {
+                alert('Error fetching user details.');
             });
         });
 
         $('.close').click(function() {
-            $('#userDetailsContainer').hide(); // Hide the user details container
+            $('#userDetailsContainer').hide(); r
         });
 
         $(window).click(function(e) {
             if ($(e.target).is('#userModal')) {
-                $('#userDetailsContainer').hide(); // Hide the user details container
+                $('#userDetailsContainer').hide(); 
             }
         });
     </script>
